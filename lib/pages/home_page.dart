@@ -1,4 +1,10 @@
+import 'dart:math';
+
+import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:my_english_card_app/models/english_today.dart';
+import 'package:my_english_card_app/packages/quote/qoute_model.dart';
+import 'package:my_english_card_app/packages/quote/quote.dart';
 import 'package:my_english_card_app/values/app_colors.dart';
 import 'package:my_english_card_app/values/app_fonts.dart';
 import 'package:my_english_card_app/values/app_images.dart';
@@ -14,9 +20,45 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   late PageController _pageController;
+  List<EnglishToday> words = [];
+  String quoteRandom = Quotes().getRandom().content!;
+  List<int> fixedListRandom({int len = 1, int max = 120, int min = 1}) {
+    if (len > max || len < min) {
+      return [];
+    }
+    List<int> newList = [];
+    Random random = Random();
+    int count = 1;
+    while (count <= len) {
+      int val = random.nextInt(max);
+      if (newList.contains(val)) {
+        continue;
+      } else {
+        newList.add(val);
+        count++;
+      }
+    }
+    return newList;
+  }
+
+  getEnglishToday() {
+    List<String> newList = [];
+    List<int> rans = fixedListRandom(len: 5, max: nouns.length);
+    for (var index in rans) {
+      newList.add(nouns[index]);
+    }
+    words = newList.map((word) => getItem(word)).toList();
+  }
+
+  EnglishToday getItem(String word) {
+    Quote? quote = Quotes().getByWord(word);
+    return EnglishToday(noun: word, quote: quote?.content, id: quote?.id);
+  }
+
   @override
   void initState() {
     _pageController = PageController(viewportFraction: 0.9);
+    getEnglishToday();
     super.initState();
   }
 
@@ -44,8 +86,7 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(16),
               margin: const EdgeInsets.only(left: 24),
               alignment: Alignment.centerLeft,
-              child: Text(
-                  '"It is amazing how complete is the delusion that beauty is goodness"',
+              child: Text('"$quoteRandom"',
                   style: AppStyles.h5
                       .copyWith(fontSize: 12, color: AppColors.textColor)),
             ),
@@ -60,6 +101,11 @@ class _HomePageState extends State<HomePage> {
                     });
                   },
                   itemBuilder: (context, index) {
+                    String firstLetter = words[index].noun!.substring(0, 1);
+                    String leftLetter = words[index].noun!.substring(1);
+                    String quoteDefault =
+                        'Think of all the beauty still left around you and be happy.';
+                    String quote = words[index].quote ?? quoteDefault;
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
@@ -85,7 +131,7 @@ class _HomePageState extends State<HomePage> {
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.start,
                                 text: TextSpan(
-                                    text: 'B',
+                                    text: firstLetter,
                                     style: AppStyles.h2.copyWith(
                                         fontFamily: AppFonts.sen,
                                         fontSize: 96,
@@ -98,7 +144,7 @@ class _HomePageState extends State<HomePage> {
                                         ]),
                                     children: [
                                       TextSpan(
-                                          text: 'eautiful',
+                                          text: leftLetter,
                                           style: AppStyles.h2.copyWith(
                                               fontFamily: AppFonts.sen,
                                               fontSize: 60,
@@ -111,8 +157,7 @@ class _HomePageState extends State<HomePage> {
                                     ])),
                             Padding(
                               padding: const EdgeInsets.only(top: 30),
-                              child: Text(
-                                  '"Think of all the beauty still left around you and be happy."',
+                              child: Text('"$quote"',
                                   style: AppStyles.h3.copyWith(
                                     color: AppColors.textColor,
                                     fontFamily: AppFonts.sen,

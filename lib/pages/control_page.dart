@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:my_english_card_app/values/app_colors.dart';
 import 'package:my_english_card_app/values/app_images.dart';
+import 'package:my_english_card_app/values/app_keys.dart';
 import 'package:my_english_card_app/values/app_styles.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ControlPage extends StatefulWidget {
   const ControlPage({super.key});
@@ -12,6 +14,21 @@ class ControlPage extends StatefulWidget {
 
 class _ControlPageState extends State<ControlPage> {
   double sliderValue = 5;
+  late SharedPreferences prefs;
+  @override
+  void initState() {
+    super.initState();
+    initDefaultValue();
+  }
+
+  initDefaultValue() async {
+    prefs = await SharedPreferences.getInstance();
+    int value = prefs.getInt(AppKeys.counter) ?? 5;
+    setState(() {
+      sliderValue = value.toDouble();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +39,9 @@ class _ControlPageState extends State<ControlPage> {
             style: AppStyles.h3
                 .copyWith(color: AppColors.textColor, fontSize: 38)),
         leading: InkWell(
-          onTap: () {
+          onTap: () async {
+            prefs.setInt(AppKeys.counter, sliderValue.toInt());
+            // ignore: use_build_context_synchronously
             Navigator.pop(context);
           },
           child: Image.asset(AppImages.leftArrow),

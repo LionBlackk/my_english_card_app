@@ -10,8 +10,11 @@ import 'package:my_english_card_app/pages/favorite_page.dart';
 import 'package:my_english_card_app/values/app_colors.dart';
 import 'package:my_english_card_app/values/app_fonts.dart';
 import 'package:my_english_card_app/values/app_images.dart';
+import 'package:my_english_card_app/values/app_keys.dart';
 import 'package:my_english_card_app/values/app_styles.dart';
 import 'package:my_english_card_app/widgets/app_buttons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -44,13 +47,17 @@ class _HomePageState extends State<HomePage> {
     return newList;
   }
 
-  getEnglishToday() {
+  getEnglishToday() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int len = prefs.getInt(AppKeys.counter) ?? 5;
     List<String> newList = [];
-    List<int> rans = fixedListRandom(len: 5, max: nouns.length);
+    List<int> rans = fixedListRandom(len: len, max: nouns.length);
     for (var index in rans) {
       newList.add(nouns[index]);
     }
-    words = newList.map((word) => getItem(word)).toList();
+    setState(() {
+      words = newList.map((word) => getItem(word)).toList();
+    });
   }
 
   EnglishToday getItem(String word) {
@@ -63,8 +70,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     _pageController = PageController(viewportFraction: 0.9);
-    getEnglishToday();
     super.initState();
+    getEnglishToday();
   }
 
   @override
@@ -102,7 +109,7 @@ class _HomePageState extends State<HomePage> {
                 height: size.height * 2 / 3,
                 child: PageView.builder(
                   controller: _pageController,
-                  itemCount: 5,
+                  itemCount: words.length,
                   onPageChanged: (index) {
                     setState(() {
                       _currentIndex = index;
@@ -165,13 +172,16 @@ class _HomePageState extends State<HomePage> {
                                     ])),
                             Padding(
                               padding: const EdgeInsets.only(top: 30),
-                              child: Text('"$quote"',
-                                  style: AppStyles.h3.copyWith(
-                                    color: AppColors.textColor,
-                                    fontFamily: AppFonts.sen,
-                                    fontSize: 28,
-                                    letterSpacing: 1,
-                                  )),
+                              child: AutoSizeText(
+                                '"$quote"',
+                                style: AppStyles.h3.copyWith(
+                                  color: AppColors.textColor,
+                                  fontFamily: AppFonts.sen,
+                                  letterSpacing: 1,
+                                ),
+                                maxFontSize: 26,
+                                maxLines: 5,
+                              ),
                             ),
                           ],
                         ),

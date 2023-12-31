@@ -5,10 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:my_english_card_app/models/english_today.dart';
 import 'package:my_english_card_app/packages/quote/qoute_model.dart';
 import 'package:my_english_card_app/packages/quote/quote.dart';
+import 'package:my_english_card_app/pages/control_page.dart';
+import 'package:my_english_card_app/pages/favorite_page.dart';
 import 'package:my_english_card_app/values/app_colors.dart';
 import 'package:my_english_card_app/values/app_fonts.dart';
 import 'package:my_english_card_app/values/app_images.dart';
 import 'package:my_english_card_app/values/app_styles.dart';
+import 'package:my_english_card_app/widgets/app_buttons.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -55,6 +58,8 @@ class _HomePageState extends State<HomePage> {
     return EnglishToday(noun: word, quote: quote?.content, id: quote?.id);
   }
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   void initState() {
     _pageController = PageController(viewportFraction: 0.9);
@@ -66,6 +71,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: AppColors.secondColor,
       appBar: AppBar(
         backgroundColor: AppColors.secondColor,
@@ -73,7 +79,9 @@ class _HomePageState extends State<HomePage> {
             style: AppStyles.h3
                 .copyWith(fontSize: 36, color: AppColors.textColor)),
         leading: InkWell(
-          onTap: () {},
+          onTap: () {
+            _scaffoldKey.currentState?.openDrawer();
+          },
           child: Image.asset(AppImages.menu),
         ),
       ),
@@ -189,11 +197,50 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          setState(() {
+            getEnglishToday();
+          });
+        },
         shape: const CircleBorder(),
         backgroundColor: AppColors.primaryColor,
         child: Image.asset(AppImages.exchange),
       ),
+      drawer: Drawer(
+          backgroundColor: AppColors.secondColor,
+          child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.only(top: 30, left: 20, right: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Your mind',
+                      style: AppStyles.h3.copyWith(color: AppColors.textColor)),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 24),
+                    child: AppButons(
+                        label: 'Favorites',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const FavoritePage()),
+                          );
+                        }),
+                  ),
+                  Padding(
+                      padding: const EdgeInsets.only(top: 24),
+                      child: AppButons(
+                          label: 'Your control',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const ControlPage()),
+                            );
+                          })),
+                ],
+              ))),
     );
   }
 

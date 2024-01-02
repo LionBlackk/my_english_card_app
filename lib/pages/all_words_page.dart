@@ -5,15 +5,15 @@ import 'package:my_english_card_app/values/app_colors.dart';
 import 'package:my_english_card_app/values/app_images.dart';
 import 'package:my_english_card_app/values/app_styles.dart';
 
-class FavoritePage extends StatefulWidget {
+class AllWordsPage extends StatefulWidget {
   final List<EnglishToday> words;
-  const FavoritePage({super.key, required this.words});
+  const AllWordsPage({super.key, required this.words});
 
   @override
-  State<FavoritePage> createState() => _FavoritePageState();
+  State<AllWordsPage> createState() => _AllWordsPageState();
 }
 
-class _FavoritePageState extends State<FavoritePage> {
+class _AllWordsPageState extends State<AllWordsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

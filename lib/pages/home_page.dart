@@ -2,9 +2,11 @@ import 'dart:math';
 
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:like_button/like_button.dart';
 import 'package:my_english_card_app/models/english_today.dart';
 import 'package:my_english_card_app/packages/quote/qoute_model.dart';
 import 'package:my_english_card_app/packages/quote/quote.dart';
+import 'package:my_english_card_app/pages/all_words_page.dart';
 import 'package:my_english_card_app/pages/control_page.dart';
 import 'package:my_english_card_app/pages/favorite_page.dart';
 import 'package:my_english_card_app/values/app_colors.dart';
@@ -109,7 +111,7 @@ class _HomePageState extends State<HomePage> {
                 height: size.height * 2 / 3,
                 child: PageView.builder(
                   controller: _pageController,
-                  itemCount: words.length,
+                  itemCount: words.length > 5 ? 6 : words.length,
                   onPageChanged: (index) {
                     setState(() {
                       _currentIndex = index;
@@ -135,56 +137,101 @@ class _HomePageState extends State<HomePage> {
                                 blurRadius: 3,
                               )
                             ]),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                                alignment: Alignment.centerRight,
-                                child: Image.asset(AppImages.heart)),
-                            RichText(
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.start,
-                                text: TextSpan(
-                                    text: firstLetter,
-                                    style: AppStyles.h2.copyWith(
-                                        fontFamily: AppFonts.sen,
-                                        fontSize: 96,
-                                        fontWeight: FontWeight.bold,
-                                        shadows: [
-                                          const BoxShadow(
-                                              color: Colors.black38,
-                                              offset: Offset(3, 6),
-                                              blurRadius: 6)
-                                        ]),
-                                    children: [
-                                      TextSpan(
-                                          text: leftLetter,
+                        child: (index >= 5)
+                            ? InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) =>
+                                              AllWordsPage(words: words)));
+                                },
+                                child: Center(
+                                  child: Text(
+                                    'Show more...',
+                                    style: AppStyles.h3.copyWith(shadows: [
+                                      const BoxShadow(
+                                        color: Colors.black38,
+                                        offset: Offset(2, 4),
+                                        blurRadius: 3,
+                                      ),
+                                    ], fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              )
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  LikeButton(
+                                    onTap: (bool isLiked) async {
+                                      setState(() {
+                                        words[index].isFavorite = !isLiked;
+                                      });
+                                      return words[index].isFavorite;
+                                    },
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    size: 45,
+                                    isLiked: words[index].isFavorite,
+                                    circleColor: const CircleColor(
+                                        start: Color(0xff00ddff),
+                                        end: Color(0xff0099cc)),
+                                    bubblesColor: const BubblesColor(
+                                      dotPrimaryColor: Color(0xff33b5e5),
+                                      dotSecondaryColor: Color(0xff0099cc),
+                                    ),
+                                    likeBuilder: (bool isLiked) {
+                                      return ImageIcon(
+                                        const AssetImage(AppImages.heart),
+                                        color:
+                                            isLiked ? Colors.red : Colors.white,
+                                        size: 45,
+                                      );
+                                    },
+                                  ),
+                                  RichText(
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.start,
+                                      text: TextSpan(
+                                          text: firstLetter,
                                           style: AppStyles.h2.copyWith(
                                               fontFamily: AppFonts.sen,
-                                              fontSize: 60,
+                                              fontSize: 96,
                                               fontWeight: FontWeight.bold,
                                               shadows: [
                                                 const BoxShadow(
-                                                  offset: Offset(0, 0),
-                                                )
-                                              ]))
-                                    ])),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 30),
-                              child: AutoSizeText(
-                                '"$quote"',
-                                style: AppStyles.h3.copyWith(
-                                  color: AppColors.textColor,
-                                  fontFamily: AppFonts.sen,
-                                  letterSpacing: 1,
-                                ),
-                                maxFontSize: 26,
-                                maxLines: 5,
+                                                    color: Colors.black38,
+                                                    offset: Offset(3, 6),
+                                                    blurRadius: 6)
+                                              ]),
+                                          children: [
+                                            TextSpan(
+                                                text: leftLetter,
+                                                style: AppStyles.h2.copyWith(
+                                                    fontFamily: AppFonts.sen,
+                                                    fontSize: 60,
+                                                    fontWeight: FontWeight.bold,
+                                                    shadows: [
+                                                      const BoxShadow(
+                                                        offset: Offset(0, 0),
+                                                      )
+                                                    ]))
+                                          ])),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 30),
+                                    child: AutoSizeText(
+                                      '"$quote"',
+                                      style: AppStyles.h3.copyWith(
+                                        color: AppColors.textColor,
+                                        fontFamily: AppFonts.sen,
+                                        letterSpacing: 1,
+                                      ),
+                                      maxFontSize: 26,
+                                      maxLines: 5,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
                         //indicator
                       ),
                     );
@@ -234,7 +281,7 @@ class _HomePageState extends State<HomePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => const FavoritePage()),
+                                builder: (_) => FavoritePage(words: words)),
                           );
                         }),
                   ),
@@ -255,7 +302,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget buildIndicator(bool isActive, Size size) {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 500),
       height: 8,
       width: isActive ? size.width * 1 / 4 : 24,
       margin: const EdgeInsets.symmetric(horizontal: 12),

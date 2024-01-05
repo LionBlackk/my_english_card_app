@@ -66,7 +66,7 @@ class _FavoritePageState extends State<FavoritePage> {
                       likeBuilder: (bool isLiked) {
                         return ImageIcon(
                           const AssetImage(AppImages.heart),
-                          color: isLiked ? Colors.red : Colors.grey,
+                          color: !isLiked ? Colors.red : Colors.grey,
                           size: 35,
                         );
                       },

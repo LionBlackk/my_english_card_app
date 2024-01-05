@@ -182,8 +182,9 @@ class _HomePageState extends State<HomePage> {
                                     likeBuilder: (bool isLiked) {
                                       return ImageIcon(
                                         const AssetImage(AppImages.heart),
-                                        color:
-                                            isLiked ? Colors.red : Colors.white,
+                                        color: !isLiked
+                                            ? Colors.red
+                                            : Colors.white,
                                         size: 45,
                                       );
                                     },

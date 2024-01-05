@@ -1,4 +1,4 @@
-![image](https://github.com/LionBlackk/my_english_card_app/assets/92169263/c5e53b77-1efc-495f-a6de-a399fd017572)# my_english_card_app
+# my_english_card_app
 
 ## Technology: Flutter
 
